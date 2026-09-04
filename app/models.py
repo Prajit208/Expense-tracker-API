@@ -15,7 +15,7 @@ class Expense(Base):
     id=Column(Integer,primary_key=True,nullable=False)
     user_id=Column(Integer,ForeignKey('users.id',ondelete="CASCADE"),nullable=False)
     title=Column(String, nullable=False)
-    description=Column(String, nullable=False)
+    description=Column(String, nullable=True)
     amount=Column(Numeric,nullable=False)
     category=Column(String,nullable=False)
     created_at=Column(TIMESTAMP(timezone=True),nullable=False,server_default=text('now()'))
