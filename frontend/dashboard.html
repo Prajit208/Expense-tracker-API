@@ -12,6 +12,24 @@
         <h2>Expense Tracker</h2>
         <button id="logout">Logout</button>
     </nav>
+    <div class="filters">
+    <input type="text" id="filter-search" placeholder="Search title">
+    <input type="text" id="filter-category" placeholder="Category">
+    <input type="number" id="filter-min" placeholder="Min amount">
+    <input type="number" id="filter-max" placeholder="Max amount">
+    <input type="date" id="filter-from">
+    <input type="date" id="filter-to">
+    <select id="filter-sort">
+        <option value="date">Date</option>
+        <option value="amount">Amount</option>
+    </select>
+    <select id="filter-order">
+        <option value="desc">Descending</option>
+        <option value="asc">Ascending</option>
+    </select>
+    <button id="apply-filters">Apply</button>
+    <button id="clear-filters">Clear</button>
+</div>
     <div id="expenses"></div>
     
     <div id="modal" class="modal hidden">

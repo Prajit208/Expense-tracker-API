@@ -1,190 +1,256 @@
+// * DOM references
+const displayEl = document.getElementById("expenses");
+const totalEl = document.getElementById("total");
+const errorEl = document.getElementById("error");
+const expenseForm = document.getElementById("add-expense");
+const modal = document.getElementById("modal");
+const addBtn = document.getElementById("addexp");
+const logoutBtn = document.getElementById("logout");
 
-async function getAllExpense(){
-    const displayEl=document.getElementById('expenses')
-    try{
-        const response=await apiFetch("/expenses/");
-        const data = await response.json()
-        displayEl.textContent=''
-
-        data.forEach(expense => {
-            const expenseDiv= document.createElement('div')
-            expenseDiv.className='expense-card'
-            const titleEl=document.createElement('input')
-            const descEl=document.createElement('textarea')
-            const amountEl=document.createElement('input')
-            amountEl.type='number'
-            const categoryEl=document.createElement('input')
-            const dateEl=document.createElement('input')
-            dateEl.type='date'
-            const editEl=document.createElement('button')
-            editEl.textContent="Edit"
-            editEl.className='BTN'
-
-            const deleteEl=document.createElement('button')
-            deleteEl.textContent='Delete'
-            deleteEl.className='BTN'
-
-
-            titleEl.value=expense.title
-            descEl.value=expense.description
-            amountEl.value=expense.amount
-            categoryEl.value=expense.category
-            dateEl.value = expense.date ? expense.date.split('T')[0] : '';
-
-            titleEl.readOnly=true
-            descEl.readOnly=true
-            amountEl.readOnly=true
-            categoryEl.readOnly=true
-            dateEl.readOnly=true
-
-            expenseDiv.appendChild(titleEl)
-            expenseDiv.appendChild(descEl)
-            expenseDiv.appendChild(amountEl)
-            expenseDiv.appendChild(categoryEl)
-            expenseDiv.appendChild(dateEl)
-            expenseDiv.appendChild(editEl)
-            expenseDiv.appendChild(deleteEl)
-            displayEl.appendChild(expenseDiv)
-
-            editEl.addEventListener('click',function(){
-
-                if (editEl.textContent==='Edit'){
-                    titleEl.readOnly=false
-                    descEl.readOnly=false
-                    amountEl.readOnly=false
-                    categoryEl.readOnly=false
-                    dateEl.readOnly=false
-                    editEl.textContent="Save"
-
-                }
-                else{
-                updateExpense(
-                    expense.id,
-                    titleEl.value,
-                    descEl.value,
-                    Number(amountEl.value),
-                    categoryEl.value,
-                    dateEl.value)
-                    editEl.textContent="Edit"
-                }
-            })
-
-            deleteEl.addEventListener('click',function(){
-                deleteExpense(expense.id)
-            })
-        });
-
-        const total=data.reduce((accumulator,currentExpense)=>{
-                return accumulator+currentExpense.amount;
-        },0);
-        
-        const totalEL=document.getElementById('total')
-        totalEL.textContent="Rs. "+total
-        
-
-        console.log(data)
-        console.log(total)
-
-        
-    }
-    catch(error){
-        console.log(error)
-    }
+// * Shows an error message
+function showError(detail) {
+  errorEl.textContent =
+    typeof detail === "string"
+      ? detail
+      : "Something went wrong. Check your input.";
 }
 
-async function createExpense(){
-    const titleEl=document.getElementById('title')
-    const descEL=document.getElementById('description')
-    const amountEl=document.getElementById('amount')
-    const categoryEl=document.getElementById('category')
-    const dateEl=document.getElementById('date')
-    
-    const title=titleEl.value;
-    const desc=descEL.value;
-    const amount=Number(amountEl.value);
-    const category=categoryEl.value;
-    const date=dateEl.value;
+async function getAllExpense() {
+  errorEl.textContent = "";
+  try {
+    const params = buildFilterParams();
 
-    try{
-        const response= await apiFetch("/expenses/",{
-            method:"POST",
-            headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({
-                title:title,
-                description:desc,
-                amount:amount,
-                category:category,
-                date:date
-            })
-        })
-        const data= await response.json()
-        console.log(data)
-        expenseForm.reset()
-        modal.classList.add('hidden')
-        getAllExpense()
+    const response = await apiFetch("/expenses/?" + params.toString());
+    const data = await response.json();
+    if (!response.ok) {
+      showError(data.detail);
+      return;
     }
-    catch(error){
-        console.log(error)
-    }
+    displayEl.textContent = "";
+
+    data.forEach((expense) => {
+      const card = createExpenseCard(expense);
+      displayEl.appendChild(card);
+    });
+
+    const total = data.reduce((accumulator, currentExpense) => {
+      return accumulator + currentExpense.amount;
+    }, 0);
+
+    totalEl.textContent = "Rs. " + total;
+
+    console.log(data);
+    console.log(total);
+  } catch (error) {
+    console.log(error);
+    showError("Could not reach the server. Try again.");
+  }
 }
 
-async function updateExpense(expense_id,title,desc,amount,category,date){
-    
-    try{
-        const response= await apiFetch("/expenses/"+expense_id,{
-            method:"PUT",
-            headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({
-                title:title,
-                description:desc,
-                amount:amount,
-                category:category,
-                date:date
-            })
-        })
-        const data= await response.json()
-        console.log(data)
+async function createExpense() {
+  errorEl.textContent = "";
+  const titleEl = document.getElementById("title");
+  const descEl = document.getElementById("description");
+  const amountEl = document.getElementById("amount");
+  const categoryEl = document.getElementById("category");
+  const dateEl = document.getElementById("date");
+
+  const title = titleEl.value;
+  const description = descEl.value;
+  const amount = Number(amountEl.value);
+  const category = categoryEl.value;
+  const date = dateEl.value;
+
+  try {
+    const response = await apiFetch("/expenses/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: title,
+        description: description,
+        amount: amount,
+        category: category,
+        date: date,
+      }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      showError(data.detail);
+      return;
     }
-    catch(error){
-        console.log(error)
-    }
-    
+    console.log(data);
+    expenseForm.reset();
+    modal.classList.add("hidden");
+    getAllExpense();
+  } catch (error) {
+    console.log(error);
+    showError("Could not reach the server. Try again.");
+  }
 }
-async function deleteExpense(expense_id){
-    try{
-        const response= await apiFetch("/expenses/"+expense_id,{
-            method:"DELETE"
-        })
-        getAllExpense();
+
+async function updateExpense(
+  expenseId,
+  title,
+  description,
+  amount,
+  category,
+  date,
+) {
+  errorEl.textContent = "";
+  try {
+    const response = await apiFetch("/expenses/" + expenseId, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: title,
+        description: description,
+        amount: amount,
+        category: category,
+        date: date,
+      }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      showError(data.detail);
+      return;
     }
-    catch(error){
-        console.log(error)
-    }
+    console.log(data);
+  } catch (error) {
+    console.log(error);
+    showError("Could not reach the server. Try again.");
+  }
 }
 
-
-
-const expenseForm=document.getElementById('add-expense')
-expenseForm.addEventListener('submit',function(event){
-    event.preventDefault();
-    createExpense()
-})
-const modal= document.getElementById('modal')
-const addbtn=document.getElementById('addexp')
-addbtn.addEventListener('click',function(){
-    modal.classList.toggle('hidden')
-    
-})
-
-modal.addEventListener('click', function(event){
-    if(event.target === modal){
-        modal.classList.add('hidden')
+async function deleteExpense(expenseId) {
+  errorEl.textContent = "";
+  try {
+    const response = await apiFetch("/expenses/" + expenseId, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      const data = await response.json();
+      showError(data.detail);
+      return;
     }
-})
+    getAllExpense();
+  } catch (error) {
+    console.log(error);
+    showError("Could not reach the server. Try again.");
+  }
+}
 
+function buildFilterParams() {
+  // * filter
+  const titleFilter = document.getElementById("filter-search").value;
+  const categoryFilter = document.getElementById("filter-category").value;
+  const minAmountFilter = document.getElementById("filter-min").value;
+  const maxAmountFilter = document.getElementById("filter-max").value;
+  const dateFromFilter = document.getElementById("filter-from").value;
+  const dateToFilter = document.getElementById("filter-to").value;
+  const orderFilter = document.getElementById("filter-order").value;
+  const sortFilter = document.getElementById("filter-sort").value;
 
-const logoutBtn=document.getElementById('logout')
-logoutBtn.addEventListener('click',function(){
-    localStorage.removeItem('token')
-    window.location.href='login.html'
-})
+  const params = new URLSearchParams();
+  if (titleFilter) {
+    params.append("search", titleFilter);
+  }
+  if (categoryFilter) {
+    params.append("category", categoryFilter);
+  }
+  if (minAmountFilter) {
+    params.append("min_amount", minAmountFilter);
+  }
+  if (maxAmountFilter) {
+    params.append("max_amount", maxAmountFilter);
+  }
+  if (dateFromFilter) {
+    params.append("date_from", dateFromFilter);
+  }
+  if (dateToFilter) {
+    params.append("date_to", dateToFilter);
+  }
+  if (sortFilter) {
+    params.append("sort_by", sortFilter);
+  }
+  if (orderFilter) {
+    params.append("order", orderFilter);
+  }
+
+  return params;
+}
+
+function createExpenseCard(expense) {
+  const expenseDiv = document.createElement("div");
+  expenseDiv.className = "expense-card";
+
+  const titleEl = document.createElement("input");
+  const descEl = document.createElement("textarea");
+  const amountEl = document.createElement("input");
+  amountEl.type = "number";
+  const categoryEl = document.createElement("input");
+  const dateEl = document.createElement("input");
+  dateEl.type = "date";
+  const fields = [titleEl, descEl, amountEl, categoryEl, dateEl];
+
+  const editEl = document.createElement("button");
+  editEl.textContent = "Edit";
+  editEl.className = "BTN";
+
+  const deleteEl = document.createElement("button");
+  deleteEl.textContent = "Delete";
+  deleteEl.className = "BTN";
+
+  titleEl.value = expense.title;
+  descEl.value = expense.description;
+  amountEl.value = expense.amount;
+  categoryEl.value = expense.category;
+  dateEl.value = expense.date ? expense.date.split("T")[0] : "";
+
+  fields.forEach((field) => (field.readOnly = true));
+
+  expenseDiv.append(...fields, editEl, deleteEl);
+
+  editEl.addEventListener("click", function () {
+    if (editEl.textContent === "Edit") {
+      fields.forEach((field) => (field.readOnly = false));
+      editEl.textContent = "Save";
+    } else {
+      updateExpense(
+        expense.id,
+        titleEl.value,
+        descEl.value,
+        Number(amountEl.value),
+        categoryEl.value,
+        dateEl.value,
+      );
+      editEl.textContent = "Edit";
+    }
+  });
+
+  deleteEl.addEventListener("click", function () {
+    deleteExpense(expense.id);
+  });
+
+  return expenseDiv;
+}
+
+// * Event listeners
+expenseForm.addEventListener("submit", function (event) {
+  event.preventDefault();
+  createExpense();
+});
+
+addBtn.addEventListener("click", function () {
+  modal.classList.toggle("hidden");
+});
+
+modal.addEventListener("click", function (event) {
+  if (event.target === modal) {
+    modal.classList.add("hidden");
+  }
+});
+
+logoutBtn.addEventListener("click", function () {
+  localStorage.removeItem("token");
+  window.location.href = "login.html";
+});
