@@ -1,4 +1,5 @@
 const API="http://127.0.0.1:8000"
+document.documentElement.dataset.theme = "forest"
 
 // * Helper function 
 async function apiFetch(path, options={}){ // ! options defaulted as empty obejct fot GET routes
@@ -14,17 +15,4 @@ async function apiFetch(path, options={}){ // ! options defaulted as empty obejc
         window.location.href='login.html'
     }
     return response;
-}
-
-async function getAllExpense(){
-    const displayEl=document.getElementById('expenses')
-    try{
-        const response=await apiFetch("/expenses/");
-        const data = await response.json()
-        console.log(data)
-        displayEl.textContent="Its working"
-    }
-    catch(error){
-        console.log(error)
-    }
 }

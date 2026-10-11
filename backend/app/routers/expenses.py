@@ -2,15 +2,44 @@ from fastapi import APIRouter,Depends, HTTPException,status,Response
 from sqlalchemy.orm import Session
 from ..database import get_db
 from ..import models,schemas,oauth2
+from datetime import date, timedelta
 
 router=APIRouter(prefix='/expenses',tags=['Expenses'])
 
 @router.get("/",status_code=status.HTTP_200_OK)
-async def get_all_expenses(db: Session=Depends(get_db),current_user: models.User=Depends(oauth2.get_current_user)):
-    expenses=db.query(models.Expense).filter(models.Expense.user_id==current_user.id).all()
-    if not expenses:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Expenses not found")
-    return expenses
+async def get_all_expenses(
+    category: str |  None=None,
+    min_amount: float | None=None,
+    max_amount: float | None=None,
+    date_from: date | None=None,
+    date_to:date| None=None,
+    search:str|None=None,
+    sort_by: str| None=None,
+    order: str| None=None,
+    db: Session=Depends(get_db),current_user: models.User=Depends(oauth2.get_current_user)):
+    # expenses=db.query(models.Expense).filter(models.Expense.user_id==current_user.id).all()
+    query=db.query(models.Expense).filter(models.Expense.user_id==current_user.id)
+    if category is not None:
+        query=query.filter(models.Expense.category==category)
+    if min_amount is not None:
+        query=query.filter(models.Expense.amount>=min_amount)    
+    if max_amount is not None:
+        query=query.filter(models.Expense.amount<=max_amount)   
+    if date_from is not None:
+        query=query.filter(models.Expense.date>=date_from)     
+    if date_to is not None:
+        query=query.filter(models.Expense.date<date_to+timedelta(days=1))
+    if search is not None:
+        query=query.filter(models.Expense.title.ilike(f"%{search}%"))
+    if sort_by=="amount":
+        column=models.Expense.amount
+    else:
+        column=models.Expense.date
+    if order=="asc":
+        query=query.order_by(column.asc())
+    else:
+        query=query.order_by(column.desc())
+    return query.all()
 
 @router.post("/",response_model=schemas.ExpenseOut,status_code=status.HTTP_201_CREATED)
 async def add_expense(expense: schemas.ExpenseCreate,db : Session=Depends(get_db),current_user: models.User=Depends(oauth2.get_current_user)):

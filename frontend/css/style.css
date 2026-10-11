@@ -1,0 +1,231 @@
+/* THEMES: set data-theme on the <html> tag, e.g. <html data-theme="dark"> */
+
+:root,
+[data-theme="light"] {
+    --bg: #f4f5f7;
+    --surface: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --border: #d1d5db;
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --primary-text: #ffffff;
+    --danger: #dc2626;
+    --danger-hover: #b91c1c;
+}
+
+[data-theme="dark"] {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --border: #334155;
+    --primary: #38bdf8;
+    --primary-hover: #0ea5e9;
+    --primary-text: #0f172a;
+    --danger: #f87171;
+    --danger-hover: #ef4444;
+}
+
+[data-theme="ocean"] {
+    --bg: #e0f2fe;
+    --surface: #f0f9ff;
+    --text: #0c4a6e;
+    --muted: #0369a1;
+    --border: #7dd3fc;
+    --primary: #0284c7;
+    --primary-hover: #0369a1;
+    --primary-text: #ffffff;
+    --danger: #e11d48;
+    --danger-hover: #be123c;
+}
+
+[data-theme="forest"] {
+    --bg: #ecfdf5;
+    --surface: #ffffff;
+    --text: #14532d;
+    --muted: #4d7c5f;
+    --border: #a7d7b8;
+    --primary: #16a34a;
+    --primary-hover: #15803d;
+    --primary-text: #ffffff;
+    --danger: #dc2626;
+    --danger-hover: #b91c1c;
+}
+
+[data-theme="sunset"] {
+    --bg: #2a1a2e;
+    --surface: #3b2543;
+    --text: #fde8d7;
+    --muted: #d6a99a;
+    --border: #5c3a5e;
+    --primary: #fb923c;
+    --primary-hover: #f97316;
+    --primary-text: #2a1a2e;
+    --danger: #f43f5e;
+    --danger-hover: #e11d48;
+}
+
+/* BASE */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 24px;
+    font-family: Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    transition: background 0.2s, color 0.2s;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* FORMS (login, signup, add expense) */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 360px;
+    margin: 0 auto 20px;
+    padding: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+input,
+textarea {
+    width: 100%;
+    padding: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+}
+
+input:focus,
+textarea:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 0;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 70px;
+}
+
+#error {
+    margin: 0;
+    color: var(--danger);
+    font-size: 14px;
+    min-height: 18px;
+}
+
+/* BUTTONS */
+button {
+    padding: 10px 16px;
+    font-size: 14px;
+    border: none;
+    border-radius: 6px;
+    background: var(--primary);
+    color: var(--primary-text);
+    cursor: pointer;
+}
+
+button:hover {
+    background: var(--primary-hover);
+}
+
+/* dashboard top buttons */
+body > button {
+    display: inline-block;
+    margin: 0 4px 20px;
+}
+
+/* EXPENSE LIST */
+#expenses {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+    max-width: 1000px;
+    margin: 0 auto 24px;
+}
+
+.expense-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+/* locked fields look like plain text, editable ones show a border */
+.expense-card input:read-only,
+.expense-card textarea:read-only {
+    background: transparent;
+    border-color: transparent;
+    resize: none;
+}
+
+.expense-card input:read-only:focus,
+.expense-card textarea:read-only:focus {
+    outline: none;
+}
+
+.expense-card input:first-child {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.BTN {
+    width: 100%;
+}
+
+/* second button on the card is Delete */
+.expense-card .BTN:last-child {
+    background: var(--danger);
+    color: #ffffff;
+}
+
+.expense-card .BTN:last-child:hover {
+    background: var(--danger-hover);
+}
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px;
+    margin: -24px -24px 24px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+
+.navbar h2 {
+    margin: 0;
+}
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}

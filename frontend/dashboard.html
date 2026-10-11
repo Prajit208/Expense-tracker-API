@@ -4,12 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <h1>Dashboard</h1>
+    <nav class="navbar">
+        <h2>Expense Tracker</h2>
+        <button id="logout">Logout</button>
+    </nav>
     <div id="expenses"></div>
+    
+    <div id="modal" class="modal hidden">
+    <form id="add-expense">
+        <input type="text"  id="title" placeholder="Title">
+        <textarea  id="description" placeholder="description"></textarea>
+        <input type="number"  id="amount" placeholder="Amount">
+        <input type="text" id="category" placeholder="Category">
+        <input type="date" id="date">
+        <button id="add-btn">Add+</button>
+        <button id="cancel-btn">Cancel</button>
+    </form>
+    </div>
     <button onclick="getAllExpense()">Get Expenses</button>
+    <button id="addexp">Add Expense</button>
+    <div class="summary-card">
+        <p>Total spent</p>
+        <h2 id="total">0</h2>
+    </div>.
     <script src="js/api.js"></script>
+    <script src="js/dashboard.js"></script>
 </body>
 </html>
