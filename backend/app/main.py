@@ -5,7 +5,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app= FastAPI()
 
-origins = os.getenv("ALLOWED_ORIGINS", "http://127.0.0.1:5500").split(",")
+origins = [
+    "http://127.0.0.1:5500",
+    "https://expense-tracker-frontend-lac-chi.vercel.app",
+]
 
 app.add_middleware(
     CORSMiddleware,
