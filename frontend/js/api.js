@@ -1,5 +1,5 @@
 const API="http://127.0.0.1:8000"
-document.documentElement.dataset.theme = "forest"
+
 
 // * Helper function 
 async function apiFetch(path, options={}){ // ! options defaulted as empty obejct fot GET routes

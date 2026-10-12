@@ -5,12 +5,12 @@ from .. import models
 from .. import schemas
 from .. import utils
 router= APIRouter(prefix="/users",tags=['User']) 
-@router.get("/")
-async def get_all_user(db:Session=Depends(get_db)):
-    user=db.query(models.User).all()
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Users not found")
-    return user
+# @router.get("/")
+# async def get_all_user(db:Session=Depends(get_db)):
+#     user=db.query(models.User).all()
+#     if not user:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Users not found")
+#     return user
 
 @router.post("/",status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut)
 async def create_user(user:schemas.UserCreate,db:Session=Depends(get_db)):
@@ -25,11 +25,11 @@ async def create_user(user:schemas.UserCreate,db:Session=Depends(get_db)):
     db.refresh(new_user)
     return new_user
 
-@router.get("/{id}",status_code=status.HTTP_200_OK)
-async def get_user(id: int, db: Session = Depends(get_db)):
-    user=db.query(models.User).filter(models.User.id==id).first()# queries user table by id and get the first match
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="User not found")
-    return user
+# @router.get("/{id}",status_code=status.HTTP_200_OK)
+# async def get_user(id: int, db: Session = Depends(get_db)):
+#     user=db.query(models.User).filter(models.User.id==id).first()# queries user table by id and get the first match
+#     if not user:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="User not found")
+#     return user
     
     

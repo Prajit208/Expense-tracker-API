@@ -20,6 +20,7 @@ async function signUp(){
             errorEl.textContent=data.detail
             return;
         }
+        window.location.href="login.html"
     }
     catch(error){
         console.log(error)

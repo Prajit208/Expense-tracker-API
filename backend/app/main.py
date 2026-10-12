@@ -1,17 +1,15 @@
-from fastapi import FastAPI,APIRouter
-from . import models
+from fastapi import FastAPI
 from.routers import expenses,users,auth
-from .database import engine
+import os
 from fastapi.middleware.cors import CORSMiddleware
 
-models.Base.metadata.create_all(bind=engine)
 app= FastAPI()
 
-
+origins = os.getenv("ALLOWED_ORIGINS", "http://127.0.0.1:5500").split(",")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5500"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
